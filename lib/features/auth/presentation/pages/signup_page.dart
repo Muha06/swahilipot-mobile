@@ -1,0 +1,220 @@
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons_pro/hugeicons.dart';
+import 'package:swahilipothub/core/constants/spacing/app_spacing.dart';
+import 'package:swahilipothub/core/constants/strings/app_assets.dart';
+import 'package:swahilipothub/core/navigation/app_navigator.dart';
+import 'package:swahilipothub/features/auth/presentation/widgets/text_field.dart';
+
+class SignupPage extends StatefulWidget {
+  const new({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  void _signUp() {
+    // Login logic will go here.
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    const iconWeight = FontWeight.w700;
+
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.pageHorizontal,
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Logo
+                  Image.asset(
+                    AppAssets.swahiliPotLogo,
+                    width: 200,
+                  ).animate().scale(
+                    begin: const Offset(0.9, 0.9),
+                    end: const Offset(1.0, 1.0),
+                    duration: const Duration(milliseconds: 700),
+                    curve: Curves.easeOutBack,
+                  ),
+
+                  const SizedBox(height: AppSpacing.massive),
+
+                  Text(
+                    'Join SwahiliPot and Connect, Collaborate, and Grow',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontFamily: GoogleFonts.playfairDisplay().fontFamily,
+                    ),
+                  ),
+
+                  const SizedBox(height: AppSpacing.xxl),
+
+                  // Full name
+                  AuthTextField(
+                    label: 'Full Name',
+                    prefixIcon: const Icon(
+                      HugeIconsStroke.user,
+                      fontWeight: iconWeight,
+                    ),
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
+                    textCapitalization: TextCapitalization.words,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Full name is required';
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  AuthTextField(
+                    label: 'Email',
+                    prefixIcon: const Icon(
+                      HugeIconsStroke.mail01,
+                      fontWeight: iconWeight,
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Email is required';
+                      }
+
+                      final email = value.trim().toLowerCase();
+
+                      if (!email.endsWith('@swahilipot.co.ke')) {
+                        return 'Use your SwahiliPot email';
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  AuthTextField(
+                    label: 'Password',
+                    controller: _passwordController,
+                    prefixIcon: const Icon(
+                      HugeIconsStroke.securityPassword,
+                      fontWeight: iconWeight,
+                    ),
+                    obscureText: true,
+                    textInputAction: TextInputAction.newline,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      }
+
+                      if (value.length < 8) {
+                        return 'Password must be at least 8 characters';
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  AuthTextField(
+                    controller: _confirmPasswordController,
+                    label: 'Confirm Password',
+                    prefixIcon: const Icon(
+                      HugeIconsStroke.securityPassword,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    obscureText: true,
+                    textInputAction: TextInputAction.done,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password confirmation is required';
+                      }
+
+                      if (value.length < 8) {
+                        return 'Password must be at least 8 characters';
+                      }
+
+                      if (value != _passwordController.text) {
+                        return 'Passwords do not match';
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: AppSpacing.xxxl),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _signUp,
+                      child: const Text('Login'),
+                    ),
+                  ),
+
+                  const SizedBox(height: AppSpacing.xxxl),
+
+                  RichText(
+                    text: TextSpan(
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      children: [
+                        TextSpan(
+                          text: 'Already have an account? ',
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text: 'Login',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // Navigate to signup
+                              AppNavigator.pop();
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
