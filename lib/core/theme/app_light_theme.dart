@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:swahilipothub/core/constants/colors/app_light_colors.dart';
-import 'package:swahilipothub/core/theme/light_themedata/button_styles.dart';
-import 'package:swahilipothub/core/theme/light_themedata/card_theme.dart';
-import 'package:swahilipothub/core/theme/light_themedata/text_styles.dart';
+import 'package:swahilipothub/core/theme/themedatas/button_styles.dart';
+import 'package:swahilipothub/core/theme/themedatas/card_theme.dart';
+import 'package:swahilipothub/core/theme/themedatas/text_styles.dart';
 
-final ThemeData appLightTheme = ThemeData(
-  useMaterial3: true,
-  brightness: Brightness.light,
-
-  colorScheme: const ColorScheme.light(
+ThemeData appLightTheme() {
+  const colorScheme = ColorScheme.light(
     primary: AppLightColors.primary,
     surface: AppLightColors.surface,
     onSurface: AppLightColors.textPrimary,
@@ -20,24 +17,31 @@ final ThemeData appLightTheme = ThemeData(
     shadow: AppLightColors.shadow,
     onPrimary: AppLightColors.surface,
     onSurfaceVariant: AppLightColors.textSecondary,
-  ),
+  );
 
-  scaffoldBackgroundColor: AppLightColors.background,
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
 
-  appBarTheme: const AppBarThemeData(
-    backgroundColor: AppLightColors.background,
-    elevation: 3,
-    toolbarHeight: 60,
-    surfaceTintColor: Colors.transparent,
-    shadowColor: AppLightColors.shadow,
-  ),
+    colorScheme: colorScheme,
 
-  elevatedButtonTheme: elevatedBtnThemeData,
-  filledButtonTheme: filledButtonThemeData,
-  outlinedButtonTheme: outlinedButtonThemeData,
-  textButtonTheme: textButtonTheme,
+    scaffoldBackgroundColor: AppLightColors.background,
 
-  cardTheme: cardThemeData,
+    appBarTheme: const AppBarThemeData(
+      backgroundColor: AppLightColors.background,
+      elevation: 3,
+      toolbarHeight: 60,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: AppLightColors.shadow,
+    ),
 
-  textTheme: textThemeData,
-);
+    elevatedButtonTheme: elevatedBtnThemeData(colorScheme),
+    filledButtonTheme: filledButtonThemeData(colorScheme),
+    outlinedButtonTheme: outlinedButtonThemeData(colorScheme),
+    textButtonTheme: textButtonThemeData(colorScheme),
+
+    cardTheme: cardThemeData(colorScheme),
+
+    textTheme: textThemeData(colorScheme),
+  );
+}

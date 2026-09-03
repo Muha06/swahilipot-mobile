@@ -1,12 +1,12 @@
 name: swahilipothub
-description: "Official App for SwahiliPot Hub" 
-publish_to: 'none' 
+description: "Official App for SwahiliPot Hub"
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
   sdk: ^3.13.0
- 
+
 dependencies:
   flutter:
     sdk: flutter
@@ -17,17 +17,25 @@ dependencies:
   flutter_animate: ^4.5.2
   hugeicons_pro: ^0.0.3
   google_fonts: ^8.2.1
+  supabase_flutter: ^2.17.2
+  flutter_dotenv: ^6.0.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  hive_generator: ^2.0.1
+  flutter_lints: ^6.0.0
+  riverpod: ^2.6.1
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0 
+  build_runner: ^2.4.13
 
 flutter:
- 
   uses-material-design: true
 
   assets:
+    - .env
     - assets/images/logos/swahilipot-fm-logo.png
     - assets/images/logos/swahilipot-logo.png
 

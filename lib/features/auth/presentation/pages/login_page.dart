@@ -1,34 +1,64 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons_pro/hugeicons.dart';
 import 'package:swahilipothub/core/constants/spacing/app_spacing.dart';
 import 'package:swahilipothub/core/constants/strings/app_assets.dart';
 import 'package:swahilipothub/core/navigation/app_navigator.dart';
+import 'package:swahilipothub/core/ui/toast/app_toast.dart';
+import 'package:swahilipothub/features/auth/domain/entities/dtos/login_dto.dart';
 import 'package:swahilipothub/features/auth/presentation/pages/signup_page.dart';
+import 'package:swahilipothub/features/auth/presentation/providers/auth_provider.dart';
 import 'package:swahilipothub/features/auth/presentation/widgets/text_field.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:swahilipothub/features/home/presentation/pages/home_page.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   void _login() {
-    // Login logic will go here.
     if (!_formKey.currentState!.validate()) {
       return;
     }
+
+    final dto = LoginDto(
+      email: _emailController.text.trim().toLowerCase(),
+      password: _passwordController.text,
+    );
+
+    ref.read(authProvider.notifier).signIn(dto);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final authState = ref.watch(authProvider);
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        AppToast.error(next.error!);
+      }
+
+      
+    });
 
     return Scaffold(
       body: SafeArea(
@@ -46,7 +76,6 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo
                     Image.asset(
                       AppAssets.swahiliPotLogo,
                       width: 200,
@@ -61,7 +90,8 @@ class _LoginPageState extends State<LoginPage> {
 
                     Text(
                       'Log in to your account',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontFamily: GoogleFonts.playfairDisplay().fontFamily,
                       ),
                     ),
@@ -69,6 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: AppSpacing.massive),
 
                     AuthTextField(
+                      controller: _emailController,
                       label: 'Email',
                       prefixIcon: const Icon(HugeIconsSolid.user),
                       keyboardType: TextInputType.emailAddress,
@@ -91,6 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: AppSpacing.md),
 
                     AuthTextField(
+                      controller: _passwordController,
                       label: 'Password',
                       prefixIcon: const Icon(HugeIconsSolid.securityPassword),
                       obscureText: true,
@@ -113,8 +145,16 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _login,
-                        child: const Text('Login'),
+                        onPressed: authState.isLoading ? null : _login,
+                        child: authState.isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Login'),
                       ),
                     ),
 
@@ -122,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     RichText(
                       text: TextSpan(
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: theme.textTheme.bodyMedium,
                         children: [
                           TextSpan(
                             text: 'Don\'t have an account? ',
@@ -136,7 +176,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // Navigate to signup
                                 AppNavigator.push(const SignupPage());
                               },
                           ),

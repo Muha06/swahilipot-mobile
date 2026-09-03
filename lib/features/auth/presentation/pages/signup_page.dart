@@ -1,35 +1,51 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons_pro/hugeicons.dart';
 import 'package:swahilipothub/core/constants/spacing/app_spacing.dart';
 import 'package:swahilipothub/core/constants/strings/app_assets.dart';
 import 'package:swahilipothub/core/navigation/app_navigator.dart';
+import 'package:swahilipothub/core/ui/toast/app_toast.dart';
+import 'package:swahilipothub/features/auth/domain/entities/dtos/signup_dto.dart';
+import 'package:swahilipothub/features/auth/presentation/providers/auth_provider.dart';
 import 'package:swahilipothub/features/auth/presentation/widgets/text_field.dart';
+import 'package:swahilipothub/features/home/presentation/pages/home_page.dart';
 
-class SignupPage extends StatefulWidget {
-  const new({super.key});
+class SignupPage extends ConsumerStatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends ConsumerState<SignupPage> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _fullNameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   void _signUp() {
-    // Login logic will go here.
     if (!_formKey.currentState!.validate()) {
       return;
     }
+
+    final dto = SignupDto(
+      fullName: _fullNameController.text.trim(),
+      email: _emailController.text.trim().toLowerCase(),
+      password: _passwordController.text,
+    );
+
+    ref.read(authProvider.notifier).signUp(dto);
   }
 
   @override
   void dispose() {
     _passwordController.dispose();
+    _fullNameController.dispose();
+    _emailController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
@@ -39,6 +55,18 @@ class _SignupPageState extends State<SignupPage> {
     final theme = Theme.of(context);
 
     const iconWeight = FontWeight.w700;
+
+    final authState = ref.watch(authProvider);
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        AppToast.error(next.error!);
+      }
+
+      if (next.user != null && next.user != previous?.user) {
+        AppNavigator.pushReplacement(const HomePage());
+      }
+    });
 
     return Scaffold(
       body: Padding(
@@ -80,6 +108,7 @@ class _SignupPageState extends State<SignupPage> {
 
                   // Full name
                   AuthTextField(
+                    controller: _fullNameController,
                     label: 'Full Name',
                     prefixIcon: const Icon(
                       HugeIconsStroke.user,
@@ -99,7 +128,9 @@ class _SignupPageState extends State<SignupPage> {
 
                   const SizedBox(height: AppSpacing.md),
 
+                  // Email
                   AuthTextField(
+                    controller: _emailController,
                     label: 'Email',
                     prefixIcon: const Icon(
                       HugeIconsStroke.mail01,
@@ -132,7 +163,7 @@ class _SignupPageState extends State<SignupPage> {
                       fontWeight: iconWeight,
                     ),
                     obscureText: true,
-                    textInputAction: TextInputAction.newline,
+                    textInputAction: TextInputAction.next,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Password is required';
@@ -179,8 +210,14 @@ class _SignupPageState extends State<SignupPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _signUp,
-                      child: const Text('Login'),
+                      onPressed: authState.isLoading ? null : _signUp,
+                      child: authState.isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Sign Up'),
                     ),
                   ),
 
@@ -202,7 +239,6 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              // Navigate to signup
                               AppNavigator.pop();
                             },
                         ),
