@@ -10,7 +10,7 @@ import 'package:swahilipothub/core/theme/app_light_theme.dart';
 import 'package:swahilipothub/features/account/data/models/user_model_hive.dart';
 import 'package:swahilipothub/features/auth/presentation/pages/login_page.dart';
 import 'package:swahilipothub/features/auth/presentation/providers/current_user_provider.dart';
-import 'package:swahilipothub/features/home/presentation/pages/home_page.dart';
+import 'package:swahilipothub/features/home/presentation/pages/tabs_screen.dart';
 import 'package:toastification/toastification.dart';
 
 void main() async {
@@ -47,7 +47,7 @@ class MyApp extends ConsumerWidget {
         darkTheme: appDarkTheme(),
         themeMode: ThemeMode.system,
         navigatorKey: navigatorKey,
-        home: hasUser ? const HomePage() : const LoginPage(),
+        home: hasUser ? const TabsScreen() : const LoginPage(),
       ),
     );
   }

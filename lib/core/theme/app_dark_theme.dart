@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:swahilipothub/core/constants/colors/app_dark_colors.dart';
+import 'package:swahilipothub/core/theme/themedatas/bottom_nav_bar.dart';
 import 'package:swahilipothub/core/theme/themedatas/button_styles.dart';
 import 'package:swahilipothub/core/theme/themedatas/card_theme.dart';
 import 'package:swahilipothub/core/theme/themedatas/text_styles.dart';
@@ -35,6 +36,7 @@ ThemeData appDarkTheme() {
       shadowColor: AppDarkColors.shadow,
     ),
 
+    navigationBarTheme: bottomNavigationBarThemeData(scheme),
     elevatedButtonTheme: elevatedBtnThemeData(scheme),
     filledButtonTheme: filledButtonThemeData(scheme),
     outlinedButtonTheme: outlinedButtonThemeData(scheme),
