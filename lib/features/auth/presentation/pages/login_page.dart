@@ -12,7 +12,6 @@ import 'package:swahilipothub/features/auth/domain/entities/dtos/login_dto.dart'
 import 'package:swahilipothub/features/auth/presentation/pages/signup_page.dart';
 import 'package:swahilipothub/features/auth/presentation/providers/auth_provider.dart';
 import 'package:swahilipothub/features/auth/presentation/widgets/text_field.dart';
-import 'package:swahilipothub/features/home/presentation/pages/home_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -56,8 +55,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (next.error != null && next.error != previous?.error) {
         AppToast.error(next.error!);
       }
-
-      
     });
 
     return Scaffold(

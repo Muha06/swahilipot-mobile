@@ -3,6 +3,7 @@ import 'package:swahilipothub/features/account/domain/entities/user.dart';
 import 'package:swahilipothub/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:swahilipothub/features/auth/domain/entities/dtos/login_dto.dart';
 import 'package:swahilipothub/features/auth/domain/entities/dtos/signup_dto.dart';
+import 'package:swahilipothub/features/auth/presentation/providers/current_user_provider.dart';
 import 'package:swahilipothub/features/auth/presentation/providers/wiring_providers.dart';
 
 class AuthState {
@@ -24,6 +25,11 @@ class AuthState {
 class AuthNotifier extends Notifier<AuthState> {
   late final AuthRepository _repository;
 
+  void _refreshCachedUser() {
+    ref.invalidate(currentUserProvider);
+    ref.invalidate(hasUserProvider);
+  }
+
   @override
   AuthState build() {
     _repository = ref.read(authRepositoryProvider);
@@ -37,6 +43,7 @@ class AuthNotifier extends Notifier<AuthState> {
     try {
       final user = await _repository.signUp(dto);
 
+      _refreshCachedUser();
       state = AuthState(user: user, isLoading: false);
     } catch (e) {
       state = AuthState(
@@ -53,6 +60,7 @@ class AuthNotifier extends Notifier<AuthState> {
     try {
       final user = await _repository.signIn(dto);
 
+      _refreshCachedUser();
       state = AuthState(user: user, isLoading: false);
     } catch (e) {
       state = AuthState(
@@ -69,6 +77,7 @@ class AuthNotifier extends Notifier<AuthState> {
     try {
       await _repository.signOut();
 
+      _refreshCachedUser();
       state = const AuthState();
     } catch (e) {
       state = AuthState(

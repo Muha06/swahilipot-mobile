@@ -37,8 +37,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final hasUserAsync = ref.watch(hasUserProvider);
-    debugPrint("Has user: ${hasUserAsync.asData?.value ?? 'Loading...'}");
+    final hasUser = ref.watch(hasUserProvider);
 
     return ToastificationWrapper(
       child: MaterialApp(
@@ -48,12 +47,7 @@ class MyApp extends ConsumerWidget {
         darkTheme: appDarkTheme(),
         themeMode: ThemeMode.system,
         navigatorKey: navigatorKey,
-        home: hasUserAsync.when(
-          data: (hasUser) => hasUser ? const HomePage() : const LoginPage(),
-          error: (_, _) => const LoginPage(),
-          loading: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-        ),
+        home: hasUser ? const HomePage() : const LoginPage(),
       ),
     );
   }

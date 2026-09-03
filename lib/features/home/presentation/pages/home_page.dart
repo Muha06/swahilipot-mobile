@@ -38,114 +38,97 @@ class UserInfoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(currentUserProvider);
+    final user = ref.watch(currentUserProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
-    return userAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Card(
+    if (user == null) {
+      return Card(
         color: colorScheme.surfaceContainer,
         elevation: 0,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Text(
-            'Unable to load user information.',
-            style: Theme.of(context).textTheme.bodyMedium
-                ?.copyWith(color: colorScheme.error),
-          ),
+        child: const Padding(
+          padding: EdgeInsets.all(20),
+          child: Text('No user is currently signed in.'),
         ),
-      ),
-      data: (user) {
-        if (user == null) {
-          return Card(
-            color: colorScheme.surfaceContainer,
-            elevation: 0,
-            child: const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('No user is currently signed in.'),
-            ),
-          );
-        }
+      );
+    }
 
-        return Card(
-          color: colorScheme.surfaceContainer,
-          elevation: 0,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      color: colorScheme.surfaceContainer,
+      elevation: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor: colorScheme.primaryContainer,
-                      child: user.avatar != null
-                          ? ClipOval(
-                              child: Image.network(
-                                user.avatar!,
-                                width: 56,
-                                height: 56,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => Icon(
-                                  Icons.person,
-                                  color: colorScheme.onPrimaryContainer,
-                                  size: 30,
-                                ),
-                              ),
-                            )
-                          : Icon(
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: colorScheme.primaryContainer,
+                  child: user.avatar != null
+                      ? ClipOval(
+                          child: Image.network(
+                            user.avatar!,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => Icon(
                               Icons.person,
                               color: colorScheme.onPrimaryContainer,
                               size: 30,
                             ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.fullName,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onSurface,
-                                ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            user.email,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: colorScheme.onSurfaceVariant),
-                          ),
-                        ],
+                        )
+                      : Icon(
+                          Icons.person,
+                          color: colorScheme.onPrimaryContainer,
+                          size: 30,
+                        ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.fullName,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                Divider(color: colorScheme.outlineVariant),
-
-                const SizedBox(height: 12),
-
-                _InfoRow(label: 'User ID', value: user.id),
-                _InfoRow(label: 'Membership', value: user.membership.name),
-                _InfoRow(
-                  label: 'Created',
-                  value: user.createdAt.toLocal().toString(),
-                ),
-                _InfoRow(
-                  label: 'Updated',
-                  value: user.updatedAt.toLocal().toString(),
+                      const SizedBox(height: 4),
+                      Text(
+                        user.email,
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        );
-      },
+
+            const SizedBox(height: 20),
+
+            Divider(color: colorScheme.outlineVariant),
+
+            const SizedBox(height: 12),
+
+            _InfoRow(label: 'User ID', value: user.id),
+            _InfoRow(label: 'Membership', value: user.membership.name),
+            _InfoRow(
+              label: 'Created',
+              value: user.createdAt.toLocal().toString(),
+            ),
+            _InfoRow(
+              label: 'Updated',
+              value: user.updatedAt.toLocal().toString(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -11,7 +11,6 @@ import 'package:swahilipothub/core/ui/toast/app_toast.dart';
 import 'package:swahilipothub/features/auth/domain/entities/dtos/signup_dto.dart';
 import 'package:swahilipothub/features/auth/presentation/providers/auth_provider.dart';
 import 'package:swahilipothub/features/auth/presentation/widgets/text_field.dart';
-import 'package:swahilipothub/features/home/presentation/pages/home_page.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -61,10 +60,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {
         AppToast.error(next.error!);
-      }
-
-      if (next.user != null && next.user != previous?.user) {
-        AppNavigator.pushReplacement(const HomePage());
       }
     });
 
